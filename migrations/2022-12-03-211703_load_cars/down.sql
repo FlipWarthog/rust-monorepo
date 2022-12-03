@@ -1,2 +1,2 @@
 -- This file should undo anything in `up.sql`
-delete * from CAR;
+delete from CAR;
