@@ -32,5 +32,6 @@ yarn.lock
 *.orig
 *.rej
 
-# Rust
-target/
+# Added by cargo
+
+/target

@@ -1,0 +1,16 @@
+[package]
+name = "rust-monorepo"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web = "4.2.1"
+diesel = { version = "2.0.2", features = ["postgres"] }
+dotenv = "0.15.0"
+env_logger = "0.10.0"
+log = "0.4.17"
+serde = "1.0.148"
+serde_derive = "1.0.148"
+serde_json = "1.0.89"
