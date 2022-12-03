@@ -1,11 +1,11 @@
 ---
 openapi: 3.0.3
 info:
-  title: Quarkus React Monorepo
-  description: Quarkus monorepo demonstrating Panache REST server with PrimeReact
+  title: Rust React Monorepo
+  description: Rust monorepo demonstrating Actix Web REST server with PrimeReact
     UI client
   contact:
-    name: Melloware
+    name: Melloware 
     url: https://melloware.com
     email: mellowaredev@gmail.com
   version: 1.0.0

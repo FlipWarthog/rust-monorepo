@@ -146,8 +146,8 @@ const App = () => {
 		<div className={wrapperClass} onClick={onWrapperClick}>
 			<div className="layout-topbar">
 				<Link to="/" className="layout-topbar-logo">
-					<img src="static/images/quarkus.svg" alt="Quarkus" height="35" width="35" />
-					<span>Quarkus</span>
+					<img src="static/images/rust.svg" alt="Rust" height="35" width="35" />
+					<span>Rust</span>
 				</Link>
 
 				<button type="button" className="p-link layout-menu-button layout-topbar-button" onClick={onToggleMenuClick} aria-label="Appliction Menu">
