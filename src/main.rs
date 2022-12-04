@@ -27,6 +27,8 @@ async fn main() -> std::io::Result<()> {
 
     // Create connection pool
     let pool = db::connection_pool();
+
+    // Create server
     log::info!("Starting web server...");
     HttpServer::new(move || {
         let cors = Cors::default()

@@ -2,12 +2,9 @@ pub mod model;
 
 use actix_web::{get, web, Error, HttpResponse};
 
-use crate::db::{
-    self,
-    car::{Car, CarResource},
-};
+use crate::db::{self, car::CarResource};
 
-use serde::Serialize;
+use model::CarJson;
 
 /// Finds car by UID.
 #[get("/entity/cars/{car_id}")]
@@ -18,7 +15,7 @@ async fn get_car(
     let car_id = car_id.into_inner();
 
     // use web::block to offload blocking Diesel code without blocking server thread
-    let car = web::block(move || {
+    let c = web::block(move || {
         let mut conn = pool.get().unwrap();
         let mut res = CarResource::with(&mut conn);
 
@@ -27,7 +24,16 @@ async fn get_car(
     .await?
     .map_err(actix_web::error::ErrorInternalServerError)?;
 
-    Ok(HttpResponse::Ok().json(car))
+    Ok(HttpResponse::Ok().json(CarJson {
+        id: c.id,
+        vin: c.vin.clone(),
+        make: c.make.clone(),
+        model: c.model.clone(),
+        year: c.year,
+        color: c.color.clone(),
+        price: c.price.clone(),
+        updated_at: c.updated_at,
+    }))
 }
 
 /// Lists manufacturers.
@@ -54,20 +60,26 @@ async fn list_cars(pool: web::Data<db::DbPool>) -> Result<HttpResponse, Error> {
         let mut conn = pool.get().unwrap();
         let mut res = CarResource::with(&mut conn);
 
-        res.list()
+        res.list().map(|v| {
+            v.iter()
+                .map(|c| CarJson {
+                    id: c.id,
+                    vin: c.vin.clone(),
+                    make: c.make.clone(),
+                    model: c.model.clone(),
+                    year: c.year,
+                    color: c.color.clone(),
+                    price: c.price.clone(),
+                    updated_at: c.updated_at,
+                })
+                .collect::<Vec<CarJson>>()
+        })
     })
     .await?
     .map_err(actix_web::error::ErrorInternalServerError)?;
 
-    Ok(HttpResponse::Ok().json(ListResp {
+    Ok(HttpResponse::Ok().json(model::ListResp {
         total_records: cars.len(),
         records: cars,
     }))
-}
-
-#[derive(Serialize)]
-struct ListResp {
-    #[serde(rename = "totalRecords")]
-    total_records: usize,
-    records: Vec<Car>,
 }
