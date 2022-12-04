@@ -1,13 +1,21 @@
 [package]
+edition = "2021"
 name = "rust-monorepo"
 version = "0.1.0"
-edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bigdecimal = "0.3.0"
-chrono = "0.4.23"
-diesel = { version = "2.0.2", features = ["postgres", "chrono", "numeric"] }
+actix-cors = "0.6.4"
+actix-web = "4.2.1"
+bigdecimal = {version = "0.3.0", features = ["serde"]}
+chrono = {version = "0.4.23", features = ["serde"]}
+diesel = {version = "2.0.2", features = ["postgres", "chrono", "numeric", "r2d2"]}
 diesel_migrations = "2.0.0"
 dotenvy = "0.15.6"
+env_logger = "0.10.0"
+log = "0.4.17"
+r2d2 = "0.8.10"
+serde = {version = "1.0.148", features = ["derive"]}
+serde_derive = "1.0.148"
+serde_json = "1.0.89"

@@ -1,11 +1,12 @@
 use bigdecimal::BigDecimal;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
+use serde::{Deserialize, Serialize};
 
 use crate::schema::{car, car::dsl::*};
 use diesel::result::Error;
 
-#[derive(Debug, PartialEq, Eq, Queryable)]
+#[derive(Debug, PartialEq, Eq, Queryable, Serialize, Deserialize)]
 pub struct Car {
     pub id: i32,
     pub vin: String,
@@ -14,6 +15,7 @@ pub struct Car {
     pub year: i32,
     pub color: String,
     pub price: BigDecimal,
+    #[serde(rename = "modifiedTime")]
     pub updated_at: NaiveDateTime,
 }
 
