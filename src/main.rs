@@ -10,37 +10,42 @@ use diesel::prelude::*;
 use dotenvy::dotenv;
 
 use crate::car::NewCar;
+use diesel::result::Error;
 
 fn main() {
+    let res = work();
+    match res {
+        Ok(_) => println!("Completed successfully"),
+        Err(_) => println!("Errored successfully"),
+    };
+}
+
+fn work() -> Result<(), Error> {
     let mut conn = establish_connection();
     let mut car_resource = CarResource::with(&mut conn);
 
-    let r = car_resource.create(NewCar {
+    let c = car_resource.create(NewCar {
         vin: "new val",
         make: "new val",
         model: "new val",
         year: 2022,
         color: "new val",
         price: BigDecimal::from_f32(2000.00).unwrap(),
-    });
-    if let Ok(c) = r {
-        println!("Car added! {:?}", c);
+    })?;
 
-        let mut update_car = c;
+    println!("Car added! {:?}", c);
 
-        update_car.make.push_str(", update");
+    let mut update_car = c;
 
-        let r = car_resource.update(update_car);
+    update_car.make.push_str(", update");
 
-        if let Ok(u) = r {
-            println!("Update car is {:?}", u);
+    let u = car_resource.update(update_car)?;
 
-            let d = car_resource.delete(u.id);
-            if let Ok(n) = d {
-                println!("Deleted car. Response is {n}");
-            }
-        }
-    }
+    println!("Update car is {:?}", u);
+
+    let n = car_resource.delete(u.id)?;
+    println!("Deleted car. Response is {n}");
+    Ok(())
 }
 
 fn establish_connection() -> PgConnection {
