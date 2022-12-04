@@ -6,8 +6,8 @@ version = "0.1.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix-cors = "0.6.4"
 actix-web = "4.2.1"
+actix-web-lab = "0.18.5"
 actix-web-validator = "5.0.1"
 bigdecimal = {version = "0.3.0", features = ["serde"]}
 chrono = {version = "0.4.23", features = ["serde"]}

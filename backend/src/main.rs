@@ -1,8 +1,8 @@
 mod api;
 mod db;
 
-use actix_cors::Cors;
 use actix_web::{middleware, web, App, HttpServer};
+use actix_web_lab::web::spa;
 
 use dotenvy::dotenv;
 
@@ -31,17 +31,19 @@ async fn main() -> std::io::Result<()> {
     // Create server
     log::info!("Starting web server...");
     HttpServer::new(move || {
-        let cors = Cors::default()
-            .allow_any_origin()
-            .allow_any_method()
-            .allow_any_header();
         App::new()
             .app_data(web::Data::new(pool.clone()))
             .wrap(middleware::Logger::default())
-            .wrap(cors)
             .service(list_cars)
             .service(get_manufacturers)
             .service(get_car)
+            .service(
+                spa()
+                    .index_file("../frontend/dist/index.html")
+                    .static_resources_mount("/static")
+                    .static_resources_location("../frontend/dist/static/")
+                    .finish(),
+            )
     })
     .bind("0.0.0.0:8080")?
     .run()
