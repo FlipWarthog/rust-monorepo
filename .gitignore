@@ -1,37 +1,12 @@
-# Eclipse
-.project
-.classpath
-.settings/
-bin/
-
-# IntelliJ
-.idea
-*.ipr
-*.iml
-*.iws
-
-# NetBeans
-nb-configuration.xml
-
-# OSX
-.DS_Store
+# Frontend
 
 # SASS
-.sass-cache
-sassdoc
+frontend/.sass-cache
+frontend/sassdoc
 
 # NODDE
-/node_modules
-yarn.lock
+frontend/node_modules
+frontend/yarn.lock
 
-# Vim
-*.swp
-*.swo
-
-# patch
-*.orig
-*.rej
-
-# Added by cargo
-
-/target
+# Backend
+backend/target
