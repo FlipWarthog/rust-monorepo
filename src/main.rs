@@ -1,7 +1,5 @@
 mod api;
-mod car;
 mod db;
-mod schema;
 
 use actix_cors::Cors;
 use actix_web::{middleware, web, App, HttpServer};
@@ -43,7 +41,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_manufacturers)
             .service(get_car)
     })
-    .bind("127.0.0.1:8080")?
+    .bind("0.0.0.0:8080")?
     .run()
     .await
 }

@@ -1,8 +1,10 @@
+pub mod model;
+
 use actix_web::{get, web, Error, HttpResponse};
 
-use crate::{
+use crate::db::{
+    self,
     car::{Car, CarResource},
-    db,
 };
 
 use serde::Serialize;

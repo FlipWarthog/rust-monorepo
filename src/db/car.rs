@@ -3,7 +3,7 @@ use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 
-use crate::schema::{car, car::dsl::*};
+use super::schema::{car, car::dsl::*};
 use diesel::result::Error;
 
 #[derive(Debug, PartialEq, Eq, Queryable, Serialize, Deserialize)]

@@ -1,3 +1,6 @@
+pub mod car;
+pub mod schema;
+
 use ::r2d2::Pool;
 use diesel::{
     pg::Pg,
