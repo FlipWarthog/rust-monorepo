@@ -50,12 +50,14 @@ impl<'a> CarResource<'a> {
             .load::<String>(self.conn)
     }
 
+    #[allow(dead_code)]
     pub fn create(&mut self, new_car: NewCar) -> Result<Car, Error> {
         diesel::insert_into(car::table)
             .values(&new_car)
             .get_result(self.conn)
     }
 
+    #[allow(dead_code)]
     pub fn update(&mut self, update_car: Car) -> Result<Car, Error> {
         diesel::update(car.find(update_car.id))
             .set((
@@ -69,6 +71,7 @@ impl<'a> CarResource<'a> {
             .get_result::<Car>(self.conn)
     }
 
+    #[allow(dead_code)]
     pub fn delete(&mut self, i: i32) -> Result<usize, Error> {
         diesel::delete(car.find(i)).execute(self.conn)
     }
