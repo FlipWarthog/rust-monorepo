@@ -2,7 +2,9 @@ name: Cargo Build & Test
 
 on:
   push:
+    paths: 'backend/**'
   pull_request:
+    paths: 'backend/**'
 
 env:
   CARGO_TERM_COLOR: always
@@ -20,6 +22,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
+        working-directory: backend
       - run: cargo build --verbose
+        working-directory: backend
       - run: cargo test --verbose
-      - working-directory: backend
+        working-directory: backend
