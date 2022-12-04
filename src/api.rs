@@ -1,9 +1,10 @@
-use actix_cors::Cors;
-use actix_web::{get, middleware, post, web, App, Error, HttpResponse, HttpServer};
-use bigdecimal::{BigDecimal, FromPrimitive};
-use crate::{db, car::{CarResource, Car}};
-use diesel::PgConnection;
-use dotenvy::dotenv;
+use actix_web::{get, web, Error, HttpResponse};
+
+use crate::{
+    car::{Car, CarResource},
+    db,
+};
+
 use serde::Serialize;
 
 /// Finds car by UID.

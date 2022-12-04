@@ -4,12 +4,9 @@ mod db;
 mod schema;
 
 use actix_cors::Cors;
-use actix_web::{get, middleware, post, web, App, Error, HttpResponse, HttpServer};
-use bigdecimal::{BigDecimal, FromPrimitive};
-use car::{CarResource, Car};
-use diesel::PgConnection;
+use actix_web::{middleware, web, App, HttpServer};
+
 use dotenvy::dotenv;
-use serde::Serialize;
 
 use crate::api::*;
 
@@ -24,7 +21,7 @@ async fn main() -> std::io::Result<()> {
 
         log::info!("Running migrations...");
         let mig_res = db::run_migrations(conn);
-        if let Err(_) = mig_res {
+        if mig_res.is_err() {
             log::error!("Received error migrating database");
             panic!("DB error");
         }
