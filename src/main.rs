@@ -2,15 +2,17 @@
 
 mod car;
 mod schema;
-use std::env;
+use std::{env, error::Error};
 
 use bigdecimal::{BigDecimal, FromPrimitive};
 use car::CarResource;
-use diesel::prelude::*;
+use diesel::{prelude::*, pg::Pg};
 use dotenvy::dotenv;
 
 use crate::car::NewCar;
-use diesel::result::Error;
+use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
+pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("./migrations");
+
 
 fn main() {
     let res = work();
@@ -20,8 +22,11 @@ fn main() {
     };
 }
 
-fn work() -> Result<(), Error> {
+fn work() -> Result<(), diesel::result::Error> {
     let mut conn = establish_connection();
+
+    run_migrations(&mut conn);
+
     let mut car_resource = CarResource::with(&mut conn);
 
     let c = car_resource.create(NewCar {
@@ -54,4 +59,14 @@ fn establish_connection() -> PgConnection {
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     PgConnection::establish(&database_url)
         .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
+}
+
+fn run_migrations(connection: &mut impl MigrationHarness<Pg>) -> Result<(), Box<dyn Error + Send + Sync + 'static>> {
+    // This will run the necessary migrations.
+    //
+    // See the documentation for `MigrationHarness` for
+    // all available methods.
+    connection.run_pending_migrations(MIGRATIONS)?;
+
+    Ok(())
 }
