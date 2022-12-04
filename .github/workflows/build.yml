@@ -2,9 +2,9 @@ name: Cargo Build & Test
 
 on:
   push:
+    paths: 'backend/**'
   pull_request:
-  paths:
-    - "**/*.rs"
+    paths: 'backend/**'
 
 env:
   CARGO_TERM_COLOR: always
