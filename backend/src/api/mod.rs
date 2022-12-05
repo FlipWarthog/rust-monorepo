@@ -1,13 +1,15 @@
 pub mod model;
 
-use actix_web::{get, post, web, Error, HttpResponse};
+use actix_web::{get, post, web::{self}, Error, HttpResponse};
 
 use crate::db::{
     self,
     car::{CarResource, NewCar},
 };
 
-use model::CarJson;
+use model::{ QueryRequestHolder, CarJson };
+
+use self::model::QueryRequest;
 
 /// Finds car by UID.
 #[get("/entity/cars/{car_id}")]
@@ -57,14 +59,16 @@ async fn get_manufacturers(pool: web::Data<db::DbPool>) -> Result<HttpResponse, 
 
 /// Lists all cars.
 #[get("/entity/cars")]
-async fn list_cars(pool: web::Data<db::DbPool>) -> Result<HttpResponse, Error> {
+async fn list_cars(pool: web::Data<db::DbPool>, request: web::Query<QueryRequestHolder>) -> Result<HttpResponse, Error> {
+    let query = serde_json::from_str::<QueryRequest>(&request.request).unwrap_or_default();
+    log::info!("query is {:?}", query);
     // use web::block to offload blocking Diesel code without blocking server thread
     let cars = web::block(move || {
         let mut conn = pool.get().unwrap();
         let mut res = CarResource::with(&mut conn);
 
-        res.list().map(|v| {
-            v.iter()
+        res.list(query).map(|(v, i)| {
+            (v.iter()
                 .map(|c| CarJson {
                     id: Some(c.id),
                     vin: c.vin.clone(),
@@ -75,15 +79,15 @@ async fn list_cars(pool: web::Data<db::DbPool>) -> Result<HttpResponse, Error> {
                     price: c.price.clone(),
                     updated_at: Some(c.updated_at),
                 })
-                .collect::<Vec<CarJson>>()
+                .collect::<Vec<CarJson>>(), i)
         })
     })
     .await?
     .map_err(actix_web::error::ErrorInternalServerError)?;
 
     Ok(HttpResponse::Ok().json(model::ListResp {
-        total_records: cars.len(),
-        records: cars,
+        total_records: cars.1,
+        records: cars.0,
     }))
 }
 

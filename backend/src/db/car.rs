@@ -1,6 +1,8 @@
 use bigdecimal::BigDecimal;
 use chrono::NaiveDateTime;
-use diesel::prelude::*;
+use diesel::{prelude::*, dsl::*};
+
+use crate::api::model::QueryRequest;
 
 use super::schema::{car, car::dsl::*};
 use diesel::result::Error;
@@ -75,7 +77,10 @@ impl<'a> CarResource<'a> {
     }
 
     // TODO: Add filters and sorts
-    pub fn list(&mut self) -> Result<Vec<Car>, Error> {
-        car.order(make.asc()).load::<Car>(self.conn)
+    pub fn list(&mut self, q: QueryRequest) -> Result<(Vec<Car>, i64), Error> {
+        let query = car;
+        let cnt = query.select(count(id)).first::<i64>(self.conn)?;
+        let res = query.order(make.asc()).limit(q.rows.unwrap()).offset(q.first.unwrap()).load::<Car>(self.conn)?;
+        Ok((res, cnt))
     }
 }
