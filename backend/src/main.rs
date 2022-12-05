@@ -37,6 +37,7 @@ async fn main() -> std::io::Result<()> {
             .service(list_cars)
             .service(get_manufacturers)
             .service(get_car)
+            .service(add_car)
             .service(
                 spa()
                     .index_file("../frontend/dist/index.html")

@@ -1,8 +1,11 @@
 pub mod model;
 
-use actix_web::{get, web, Error, HttpResponse};
+use actix_web::{get, post, web, Error, HttpResponse};
 
-use crate::db::{self, car::CarResource};
+use crate::db::{
+    self,
+    car::{CarResource, NewCar},
+};
 
 use model::CarJson;
 
@@ -25,14 +28,14 @@ async fn get_car(
     .map_err(actix_web::error::ErrorInternalServerError)?;
 
     Ok(HttpResponse::Ok().json(CarJson {
-        id: c.id,
+        id: Some(c.id),
         vin: c.vin.clone(),
         make: c.make.clone(),
         model: c.model.clone(),
         year: c.year,
         color: c.color.clone(),
         price: c.price.clone(),
-        updated_at: c.updated_at,
+        updated_at: Some(c.updated_at),
     }))
 }
 
@@ -63,14 +66,14 @@ async fn list_cars(pool: web::Data<db::DbPool>) -> Result<HttpResponse, Error> {
         res.list().map(|v| {
             v.iter()
                 .map(|c| CarJson {
-                    id: c.id,
+                    id: Some(c.id),
                     vin: c.vin.clone(),
                     make: c.make.clone(),
                     model: c.model.clone(),
                     year: c.year,
                     color: c.color.clone(),
                     price: c.price.clone(),
-                    updated_at: c.updated_at,
+                    updated_at: Some(c.updated_at),
                 })
                 .collect::<Vec<CarJson>>()
         })
@@ -82,4 +85,39 @@ async fn list_cars(pool: web::Data<db::DbPool>) -> Result<HttpResponse, Error> {
         total_records: cars.len(),
         records: cars,
     }))
+}
+
+#[post("/entity/cars")]
+async fn add_car(
+    pool: web::Data<db::DbPool>,
+    data: web::Json<CarJson>,
+) -> Result<HttpResponse, Error> {
+    // use web::block to offload blocking Diesel code without blocking server thread
+    let car = web::block(move || {
+        let mut conn = pool.get().unwrap();
+        let mut res = CarResource::with(&mut conn);
+
+        res.create(NewCar {
+            vin: &data.vin,
+            make: &data.make,
+            model: &data.model,
+            year: data.year,
+            color: &data.color,
+            price: data.price.clone(),
+        })
+        .map(|c| CarJson {
+            id: Some(c.id),
+            vin: c.vin.clone(),
+            make: c.make.clone(),
+            model: c.model.clone(),
+            year: c.year,
+            color: c.color.clone(),
+            price: c.price.clone(),
+            updated_at: Some(c.updated_at),
+        })
+    })
+    .await?
+    .map_err(actix_web::error::ErrorInternalServerError)?;
+
+    Ok(HttpResponse::Ok().json(car))
 }
